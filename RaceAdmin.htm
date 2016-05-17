@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Admin</title>
+<style type="text/css">
+	body 
+	{
+		background-color: #d0e4fe;
+	}
+	#page
+	{
+		font-family: Verdana;font-size:small;
+	}
+	#Select1
+	{
+		width: 133px;
+	}
+       
+	#Select2
+	{
+		width: 133px;
+	}
+	#Select3
+	{
+		width: 233px;
+	}
+	.boxed
+	{
+		border: 4px solid;
+        border-style:ridge;
+        margin-left:20px;
+        padding-left:10px;
+        padding-top:5px;
+        padding-bottom:10px;
+        background:lightblue;
+        width:900px;
+    }
+    .clearfix:after 
+    {
+		display: block;
+		visibility: hidden;
+		content: ".";
+		clear: both;
+		text-indent: -9999px;
+		height: 0;
+	}
+</style>
+<script language="javascript" type="text/javascript">
+	
+		function CheckSearch(cLastName){
+			if (cLastName == "") {
+				alert("The last name cannot be blank when searching. Try again...")
+				return
+			}
+			document.PlayerEdit.submit()
+		}	
+			
+        function SelectPlayer(nRowSelected){
+			//alert(nRowSelected)
+			var cRow = nRowSelected.toString()
+			if (document.getElementById(cRow).value == ""){
+				alert("Handle cannot be blank. Choose a handle and try again...")
+				return
+			}
+			var SelectedCardId = "Select" + cRow
+			var PermanentLinkId = "Perm" + cRow
+			if (cRow == "1" && document.getElementById("FirstName1")){
+				cFirstName = document.getElementById("FirstName1").value
+				if (cFirstName == ""){
+					alert("First Name cannot be blank. Enter a first name and try again...")
+					return
+				}
+				
+			}
+			else
+			{
+				cFirstName = document.getElementById("PlayerMatchTable").rows[nRowSelected].cells[1].innerHTML
+			}
+			var PlayerSelected = document.getElementById("PlayerMatchTable").rows[nRowSelected].cells[0].innerHTML + "%" + cFirstName  + "%" + document.getElementById(cRow).value + "%" + document.getElementById(SelectedCardId).value  + "%" + document.getElementById(PermanentLinkId).value 
+			document.PlayerSelection.SelectedPlayer.value = PlayerSelected
+			document.PlayerSelection.submit()
+		}
+		
+		function CheckPseudonym() {
+			if (document.AssignPseudonymToCard.Cards == "") {
+				alert("The 'cards' field cannot be empty when assigning a pseudonym")
+				return
+			}
+			if (document.AssignPseudonymToCard.Pseudonym == "") {
+				alert("The 'pseudonym' field cannot be empty when assigning a pseudonym")
+				return
+			}
+			document.AssignPseudonymToCard.submit()
+		}
+</script>
+<style type="text/css" id="custom-background-css">
+body.custom-background { background-color: #9ed465; background-image: url('http://ws6012452530.websoon.com/wp-content/uploads/2013/11/background.jpg'); background-repeat: repeat-x; background-position: top left; background-attachment: fixed; }
+</style>
+
+</head>
+<body class="custom-background">
+<div>
+    <table style='width:900px; height:200px;'>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+        <td style='vertical-align:middle;font-size:200%;font-weight:bold'>
+            Circuit Chaser<br/>Admin
+        </td>
+        <td style='float:right'><img src="http://www.zoomzooms.ca/wp-content/uploads/2013/11/zoomzoomslogo.png" alt="Zoom Zoom&#039;s Indoor Playground &#8211; Ancaster, ON" width="300" height="200" style="float:right" /></td>
+    </table>
+</div>
+$cLastActionPerformed
+<div class="boxed">
+
+<form id="PlayerSearch" name="PlayerEdit" method="post" action="PlayerEdit">
+<div style="font-weight:bold">Search For Player:</DIV><br />
+<table><tr><td>
+<Table border=|"1"><th>Last Name:</th><th>First Name</th>
+<tr><td><input id="LastName" name="LastName" value="$LastName" type="text" maxlength="40" size="30"/></td>
+<td><input id="FirstName" name="FirstName" value="$FirstName" maxlength="40" size="30" type="text" /></td>
+</tr></Table></td><td style="vertical-align:bottom"><input id="Search" name="search" type="button" value="Search" onClick="CheckSearch(document.PlayerEdit.LastName.value)"/></td></tr></table><br /><input type="button" onclick="document.getElementById('LastName').value='';document.getElementById('FirstName').value='';document.getElementById('LastName').focus();" value="Clear values">
+</form>
+<div>$PlayerMatchTable</div>
+
+</div> 
+<br />
+<div class="boxed">
+ <form name="AssignPseudonymToCard" method="post" action="AssignPseudonym">
+ <div style="font-weight:bold">Assign Pseudonym To Card:</div>
+ <br />
+ Card:
+ <select id="Select3" name="Cards">
+     $PseudonymCardsAvailable
+ </select>
+ Pseudonym: <input id="Pseudonym" maxlength="20" name="Pseudonym" type="text" size="20" value="" /><input id="Pseudonym1" type="button" value="Assign Pseudonym To Card" onclick='CheckPseudonym()'/></form>
+ </div
+</body>
+</html>

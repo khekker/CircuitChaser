@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="${jquery_ui_css_url}" media="screen" />
+    <script type="text/javascript" src="${jquery_url}"></script>
+    <script type="text/javascript" src="${jquery_ui_url}"></script>
+    <style>
+		input[type=button], input[type=submit], input[type=reset] {
+		background: #eee;
+		color: #222;
+		border: 1px outset #ccc;
+		padding: .1em .5em;
+		}
+	</style>
+
+	<style type="text/css" id="custom-background-css">
+	body.custom-background { background-color: #9ed465; background-image: url('http://ws6012452530.websoon.com/wp-content/uploads/2013/11/background.jpg'); background-repeat: repeat-x; background-position: top left; background-attachment: fixed; }
+	</style>
+
+	<script type="text/javascript">
+
+	var tt = 0;
+
+	var TimeDifference = 0;
+	function UpdateProgress(cLatestInfo){
+		document.getElementById('score').innerHTML = cLatestInfo
+		ServerTime = document.getElementById("ServerTime").innerHTML
+		IpAddress = document.getElementById("IpAddress").innerHTML
+		window.document.title = IpAddress
+		LocalTime = getMsSinceMidnight(new Date());
+		TimeDifference = ServerTime - LocalTime;
+	}
+
+	function getMsSinceMidnight(d) {
+		var e = new Date(d);
+		return (d - e.setHours(0,0,0,0))/1000;
+	}
+
+
+	function CalcTimeElapsedSoFar() {
+		var d = new Date();
+		var ms = d.getMilliseconds();
+		var n = d.toTimeString();
+		var cTime = n.substr(0,8) + "." + ms
+    
+  
+		if (document.getElementById("DataTable") != undefined) {
+			var nNumberOfRows = document.getElementById("DataTable").rows.length;
+			var cServerTime = document.getElementById("ServerTime").innerHTML
+			//No need to do the header row, so counter starts at 1
+			for (i = 1; i < nNumberOfRows; i++) {
+				var sEndingTime = document.getElementById("DataTable").rows[i].cells[2].innerHTML
+				if (sEndingTime.indexOf("&nbsp;") > -1 || sEndingTime.indexOf("img") > -1){
+					var cStartingTime = document.getElementById("DataTable").rows[i].cells[1].innerHTML
+					var cSE = convertToSeconds(cTime) - convertToSeconds(cStartingTime) + TimeDifference
+					if (cSE <= 0){
+						cSE = cSE + 86400
+					}	
+					var cSecondsElapsed = cSE.toFixed(3)
+					var hours = parseInt(cSecondsElapsed/3600) % 24;
+					var minutes = parseInt(cSecondsElapsed/60) % 60;
+					var seconds = cSecondsElapsed % 60;
+					seconds = Math.floor(seconds);
+					cTimeElapsed = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes:minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+					document.getElementById("DataTable").rows[i].cells[3].innerHTML = cTimeElapsed;
+				}	
+			}
+		}
+		tt += 1;
+		//alert(tt);
+		if (tt == 3){
+			//alert("hello");
+			document.StartForm.submit();
+		}
+    
+		var t = setTimeout(function(){CalcTimeElapsedSoFar()},500);	
+	}
+
+	function convertToSeconds(s) {
+		var c = s.split(':');
+		var x = c[2];
+		var d = x.split('.');
+		var cSeconds = parseInt(c[0]) * 3600 + parseInt(c[1]) * 60 + parseInt(c[2]) + "." + (d[1] != undefined ? d[1] : "0");
+		return cSeconds	
+	}
+
+</script>
+</head>
+<body class="custom-background" onload="CalcTimeElapsedSoFar()">
+  <script type="text/javascript">
+    $$(function(){
+        $$('#result').hide();
+        $$('#kill_ping').click(function() {
+            $$.ajax({
+                url: "/kill_proc",
+                cache: false,
+                success: function(html){
+                    window.frames[0].stop();
+                    $$("#result").html(html);
+                    $$("#result").show('slow');
+                }
+            });
+            return false;
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    $$(function(){
+		$$('#ping').click(function() {
+			$$('#result').hide();
+        });
+    });
+    </script>
+  <h3>Circuit Chaser</h3>
+  <form id="start_form" name="StartForm" target="console_iframe" method="post" action="/ping">
+  <input id="start" name="start_btn" type="submit" value="Start"></input>
+  </form>
+  <form id="kill_form" method="post" action="/kill_proc">
+  <input id="kill_ping" type="submit" value="Stop"></input>
+  </form>
+  <form id="Race_Admin" method="post" action="/Race_Admin" target="_blank">
+  <input id="btnRace_Admin" type="submit" value="Administer"></input>
+  </form>
+  <div id="result" class="ui-state-highlight">
+  <span class="ui-icon ui-icon-check ui-icon-left" style="margin-right: .3em;">
+  </span>
+  </div>
+  <div><table><tr><td id="score" style="font-size:48px"></td></tr></table></div>
+  <iframe name="console_iframe" style="display:none"/>
+  </body>
+</html>
